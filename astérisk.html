@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>astérisk</title>
+<meta name="description" content="astérisk conçoit des outils numériques sur mesure pour les commerces sénégalais, à commencer par le menu digital QR Code nouvelle génération.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bone:#E8E6DE;
+    --bone-dim:#DCD9CD;
+    --ink-light-bg:#1B211D;
+    --forest:#10201C;
+    --forest-2:#152820;
+    --paper:#F1EDE4;
+    --amber:#E8A33D;
+    --amber-dim:#c98a2e;
+    --brique:#C1502E;
+    --line-light: rgba(27,33,29,0.14);
+    --line-dark: rgba(241,237,228,0.14);
+
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Newsreader', serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --hand: 'Caveat', cursive;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family: var(--body);
+    background: var(--bone);
+    color: var(--ink-light-bg);
+    -webkit-font-smoothing: antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* film-grain overlay — takes the flatness off every section, light or dark */
+  body::after{
+    content:"";
+    position:fixed; inset:0; z-index:200; pointer-events:none;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- organic photo card (signature "human" element) ---------- */
+  .photo-card{
+    position:relative;
+    padding:10px 10px 34px;
+    background:var(--paper);
+    box-shadow: 0 22px 40px -18px rgba(20,20,15,0.35);
+    border-radius:3px;
+  }
+  .photo-card img{
+    display:block; width:100%; height:100%; object-fit:cover;
+    border-radius:2px;
+    filter:saturate(1.04) contrast(1.02);
+  }
+  .photo-card .caption{
+    position:absolute; bottom:5px; left:14px; right:14px;
+    font-family:var(--hand); font-size:19px; color:var(--ink-light-bg);
+    line-height:1;
+  }
+  .photo-card.on-dark{ background:var(--forest-2); box-shadow:0 22px 45px -16px rgba(0,0,0,0.55); }
+  .photo-card.on-dark .caption{ color:var(--paper); }
+  .tilt-l{ transform:rotate(-3.2deg); }
+  .tilt-r{ transform:rotate(2.6deg); }
+  @media (max-width:640px){ .tilt-l, .tilt-r{ transform:rotate(0deg); } }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  a{color:inherit;}
+  ::selection{background:var(--amber); color:var(--forest);}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){ .wrap{padding:0 22px;} }
+
+  h1,h2,h3,.display{font-family:var(--display); font-weight:600; letter-spacing:-0.01em;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; opacity:0.72;
+  }
+  .eyebrow .mark{color:var(--brique); font-size:15px;}
+
+  button, .btn-reset{font-family:inherit; border:none; background:none; cursor:pointer;}
+
+  /* ---------- asterisk mark (signature element) ---------- */
+  .asterisk-mark{
+    display:inline-block;
+    position:relative;
+    width:1em; height:1em;
+  }
+  .spin-slow{ animation: spin 22s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  svg.ax{ display:block; }
+
+  /* footnote-style annotation used for honesty/placeholder markers */
+  sup.note{
+    font-family:var(--mono); color:var(--brique); cursor:help;
+    font-size:0.62em; margin-left:2px;
+  }
+
+  /* ---------- nav ---------- */
+  header.nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    backdrop-filter: blur(10px);
+    background: rgba(232,230,222,0.72);
+    border-bottom:1px solid var(--line-light);
+    transition: background .4s ease, border-color .4s ease, color .4s ease;
+  }
+  header.nav.on-dark{
+    background: rgba(16,32,28,0.62);
+    border-bottom:1px solid var(--line-dark);
+    color: var(--paper);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px; max-width:1180px; margin:0 auto;
+  }
+  .logo{
+    font-family:var(--display); font-weight:700; font-size:19px;
+    display:flex; align-items:center; gap:8px;
+    letter-spacing:-0.01em;
+  }
+  .logo .ax{ width:18px; height:18px; }
+  nav.links{ display:flex; gap:34px; font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em; }
+  nav.links a{ text-decoration:none; opacity:0.75; transition:opacity .2s ease; position:relative; }
+  nav.links a:hover{ opacity:1; }
+  nav.links a:focus-visible, .btn:focus-visible, a:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; }
+  @media (max-width:760px){ nav.links{ display:none; } }
+
+  .btn{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.05em;
+    padding:10px 18px; border-radius:3px;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .25s ease, background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .btn-solid{ background:var(--forest); color:var(--paper); }
+  .btn-solid:hover{ background:var(--ink-light-bg); transform:translateY(-1px); }
+  .btn-ghost{ border:1px solid var(--line-dark); color:var(--paper); }
+  .btn-ghost:hover{ border-color:var(--amber); color:var(--amber); }
+  .btn-amber{ background:var(--amber); color:var(--forest); }
+  .btn-amber:hover{ background:#f0b352; transform:translateY(-1px); }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:168px 0 96px;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns: 1.25fr 0.9fr; gap:56px; align-items:end;
+  }
+  @media (max-width:900px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .hero h1{
+    font-size:clamp(40px, 6vw, 74px);
+    line-height:1.02;
+    margin:20px 0 26px;
+  }
+  .hero h1 em{ font-style:italic; font-family:var(--body); font-weight:500; color:var(--brique); }
+  .hero p.lede{
+    font-size:19px; line-height:1.55; max-width:46ch; opacity:0.82;
+  }
+  .hero-actions{ display:flex; gap:14px; margin-top:34px; flex-wrap:wrap; }
+  .hero-actions .btn-solid{ background:var(--ink-light-bg); }
+  .hero-actions .btn-outline{
+    border:1px solid var(--line-light); padding:10px 18px; border-radius:3px;
+    font-family:var(--mono); font-size:12.5px;
+  }
+
+  .hero-side{
+    font-family:var(--mono); font-size:13px; line-height:1.8; opacity:0.75;
+    border-left:1px solid var(--line-light); padding-left:20px;
+  }
+  .hero-side .foot{ margin-top:14px; font-size:11.5px; opacity:0.8; }
+
+  .scroll-cue{
+    display:flex; align-items:center; gap:10px; margin-top:64px;
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.1em; opacity:0.55;
+  }
+  .scroll-cue .ax{ width:14px; height:14px; }
+
+  /* ---------- gradient transition ---------- */
+  .bridge{
+    height:340px;
+    position:relative;
+    background-image: url("https://www.byblos.com/wp-content/uploads/Restaurant-IL-Giardino_Hotel-Byblos_Saint-Tropez-%C2%A9Stephan-Julliard-7-1600x1000.jpg");
+    background-size:cover;
+    background-position:center 42%;
+  }
+  .bridge::before{
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(180deg, var(--bone) 0%, rgba(216,207,174,0.55) 14%, rgba(90,78,52,0.55) 44%, rgba(16,32,28,0.86) 78%, var(--forest) 100%);
+  }
+  .bridge .bridge-note{
+    position:absolute; left:32px; bottom:26px; z-index:2;
+    font-family:var(--hand); font-size:22px; color:var(--paper);
+    max-width:280px; line-height:1.15;
+  }
+  @media (max-width:640px){ .bridge{ height:220px; } .bridge .bridge-note{ font-size:18px; left:22px; bottom:18px; } }
+
+  /* ---------- dark base ---------- */
+  .dark{
+    background:var(--forest);
+    color:var(--paper);
+  }
+  .dark .eyebrow{ opacity:0.6; }
+  .dark hr.rule{ border:none; border-top:1px solid var(--line-dark); }
+
+  section{ padding:108px 0; }
+  @media (max-width:640px){ section{ padding:72px 0; } }
+
+  h2.section-title{
+    font-size:clamp(30px, 4vw, 46px);
+    margin:16px 0 20px;
+    max-width:16ch;
+  }
+  p.section-lede{ font-size:17px; line-height:1.6; max-width:56ch; opacity:0.82; }
+
+  /* ---------- product showcase ---------- */
+  .showcase{
+    display:grid; grid-template-columns: 0.95fr 1.05fr; gap:64px; align-items:center;
+  }
+  @media (max-width:900px){
+    .showcase{ grid-template-columns:1fr; gap:48px; }
+    .phone{ margin-top:26px; }
+  }
+  @media (max-width:520px){
+    .phone > .photo-card{ left:auto !important; right:-14px !important; bottom:-24px !important; width:128px !important; }
+  }
+
+  .phone{
+    position:relative; width:min(300px, 78vw); margin:0 auto;
+    border:1px solid var(--line-dark); border-radius:28px;
+    background: linear-gradient(160deg, var(--forest-2), #0b1713);
+    padding:14px; box-shadow: 0 40px 80px -30px rgba(0,0,0,0.6);
+  }
+  .phone-screen{
+    background:var(--paper); border-radius:18px; color:var(--ink-light-bg);
+    padding:22px 18px 26px; min-height:420px;
+  }
+  .phone-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .phone-top .brand{ font-family:var(--display); font-weight:700; font-size:14px; display:flex; gap:6px; align-items:center;}
+  .phone-top .brand .ax{ width:12px; height:12px; color:var(--brique); }
+  .qr-chip{
+    font-family:var(--mono); font-size:9.5px; letter-spacing:0.05em; opacity:0.6;
+    border:1px solid var(--line-light); border-radius:20px; padding:4px 8px;
+  }
+  .menu-item{
+    display:flex; justify-content:space-between; gap:10px; padding:11px 0;
+    border-bottom:1px solid var(--line-light); font-size:13.5px;
+  }
+  .menu-item .name{ font-weight:500; }
+  .menu-item .desc{ display:block; font-size:11.5px; opacity:0.62; font-family:var(--mono); margin-top:2px;}
+  .menu-item .price{ font-family:var(--mono); font-size:12.5px; white-space:nowrap; }
+  .menu-cta{
+    margin-top:18px; background:var(--forest); color:var(--paper);
+    font-family:var(--mono); font-size:11.5px; text-align:center; padding:11px; border-radius:8px;
+    display:flex; justify-content:space-between; padding-left:14px; padding-right:14px;
+  }
+
+  .showcase-copy .steps{ margin-top:36px; display:flex; flex-direction:column; gap:0; }
+  .step{
+    display:grid; grid-template-columns:44px 1fr; gap:16px;
+    padding:22px 0; border-top:1px solid var(--line-dark);
+  }
+  .step:last-child{ border-bottom:1px solid var(--line-dark); }
+  .step .ax{ width:22px; height:22px; margin-top:2px; color:var(--amber); }
+  .step h3{ font-size:17px; margin-bottom:6px; }
+  .step p{ font-size:14.5px; opacity:0.78; line-height:1.55; max-width:44ch; }
+
+  /* ---------- services ---------- */
+  .services-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
+    background:var(--line-dark); border:1px solid var(--line-dark); margin-top:56px;
+  }
+  @media (max-width:900px){ .services-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .services-grid{ grid-template-columns:1fr; } }
+  .service{
+    background:var(--forest); padding:34px 28px; min-height:200px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    transition:background .3s ease;
+  }
+  .service:hover{ background:var(--forest-2); }
+  .service .tag{ font-family:var(--mono); font-size:11px; opacity:0.5; letter-spacing:0.08em; }
+  .service h3{ font-size:19px; margin-top:44px; }
+  .service p{ font-size:14px; opacity:0.72; margin-top:8px; line-height:1.5; }
+  .service.flagship{
+    position:relative;
+    background-image:
+      linear-gradient(160deg, rgba(16,32,28,0.88), rgba(14,28,24,0.94)),
+      url("https://images.unsplash.com/photo-1665332195309-9d75071138f0?q=80&w=900&auto=format&fit=crop");
+    background-size:cover; background-position:center;
+  }
+  .service.flagship::before{
+    content:"phare"; position:absolute; top:34px; right:28px;
+    font-family:var(--mono); font-size:10px; color:var(--amber); letter-spacing:0.1em;
+  }
+
+  /* ---------- about ---------- */
+  .about{
+    display:grid; grid-template-columns: 1fr 1fr; gap:64px;
+  }
+  
+  @media (max-width:900px){ .about{ grid-template-columns:1fr; gap:36px; } }
+  .about-stats{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+  .stat .num{ font-family:var(--display); font-size:34px; font-weight:600; color:var(--amber); }
+  .stat .label{ font-family:var(--mono); font-size:12px; opacity:0.65; margin-top:2px; }
+
+  .footnotes{
+    margin-top:56px; padding-top:20px; border-top:1px solid var(--line-dark);
+    font-family:var(--mono); font-size:11.5px; opacity:0.55; line-height:1.7;
+  }
+
+  /* ---------- contact ---------- */
+  .contact{
+    background: radial-gradient(ellipse at 30% 20%, #1a3128 0%, var(--forest) 55%);
+  }
+  .contact-inner{
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:start;
+  }
+  @media (max-width:900px){ .contact-inner{ grid-template-columns:1fr; } }
+  .contact h2{ font-size:clamp(32px,5vw,54px); max-width:14ch; }
+  .contact-links{ display:flex; flex-direction:column; gap:18px; margin-top:36px; }
+  .contact-links a{
+    text-decoration:none; font-family:var(--display); font-size:20px;
+    display:flex; align-items:center; gap:10px; width:fit-content;
+    border-bottom:1px solid transparent; transition:border-color .2s ease, color .2s ease;
+  }
+  .contact-links a:hover{ border-color:var(--amber); color:var(--amber); }
+  .contact-links .ax{ width:14px; height:14px; color:var(--brique); }
+
+  .contact-card{
+    border:1px solid var(--line-dark); border-radius:12px; padding:30px;
+    background:rgba(241,237,228,0.03);
+  }
+  .contact-card .eyebrow{ margin-bottom:14px; }
+  .contact-card ul{ list-style:none; display:flex; flex-direction:column; gap:12px; font-size:14.5px; opacity:0.85; }
+  .contact-card li{ display:flex; gap:10px; }
+  .contact-card li .ax{ width:13px; height:13px; margin-top:4px; flex-shrink:0; color:var(--amber); }
+
+  footer{
+    padding:36px 0; border-top:1px solid var(--line-dark);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    font-family:var(--mono); font-size:11.5px; opacity:0.55;
+  }
+
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <div class="logo">
+      <svg class="ax spin-slow" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      astérisk
+    </div>
+    <nav class="links">
+      <a href="#produit">Produit</a>
+      <a href="#services">Services</a>
+      <a href="#apropos">À propos</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="btn btn-solid">Discuter du projet</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow"><span class="mark">*</span> studio numérique — Dakar, Sénégal</div>
+        <h1>Votre commerce mérite mieux <em>qu'un menu plastifié</em>.</h1>
+        <p class="lede">astérisk conçoit des outils numériques sur mesure pour les commerces — à commencer par le menu digital nouvelle génération, du QR code jusqu'à la caisse.</p>
+        <div class="hero-actions">
+          <a href="#produit" class="btn btn-solid">Voir le menu digital</a>
+          <a href="#contact" class="btn-outline btn-reset">Nous écrire →</a>
+        </div>
+      </div>
+      <div class="hero-side">
+        astérisk, nom commun<br>
+        <strong style="font-family:var(--body); font-style:italic; opacity:0.9;">/asteʁisk/</strong> — signe (*) qui renvoie à une précision, un détail qui change la lecture d'un texte.
+        <div class="foot">Chez nous : le détail technique qui change la façon dont vos clients commandent<sup class="note" title="Contenu de présentation — informations à confirmer par astérisk">*</sup>.</div>
+
+        <div class="photo-card tilt-r" style="max-width:270px; margin:38px 0 0 auto;">
+          <img src="https://images.unsplash.com/photo-1665332195309-9d75071138f0?q=80&w=900&auto=format&fit=crop" alt="Thiéboudienne servi avec poisson grillé, prêt à être commandé">
+          <div class="caption">le plat, avant le scan *</div>
+        </div>
+      </div>
+    </div>
+    <div class="wrap scroll-cue">
+      <svg class="ax spin-slow" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      défiler pour découvrir
+    </div>
+  </section>
+
+  <div class="bridge">
+    <div class="bridge-note">* fait à la main, encore aujourd'hui</div>
+  </div>
+
+  <!-- PRODUIT -->
+  <section class="dark" id="produit">
+    <div class="wrap">
+      <div class="eyebrow"><span class="mark">*</span> produit phare</div>
+      <div class="showcase" style="margin-top:20px;">
+        <div class="phone reveal" style="position:relative;">
+          <div class="photo-card on-dark tilt-l" style="position:absolute; width:160px; left:-58px; bottom:-30px; z-index:5;">
+            <img src="https://images.unsplash.com/photo-1728044849248-e90f3ec6a889?q=80&w=700&auto=format&fit=crop" alt="Client réglant sa commande depuis son téléphone">
+            <div class="caption" style="font-size:16px;">payer, en un geste *</div>
+          </div>
+          <div class="phone-screen">
+            <div class="phone-top">
+              <div class="brand">
+                <svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                Chez Fatou
+              </div>
+              <div class="qr-chip">table 04</div>
+            </div>
+            <div class="menu-item">
+              <span><span class="name">Thiéboudienne rouge</span><span class="desc">riz, poisson, légumes</span></span>
+              <span class="price">3 500 F</span>
+            </div>
+            <div class="menu-item">
+              <span><span class="name">Yassa poulet</span><span class="desc">oignons confits, citron</span></span>
+              <span class="price">3 000 F</span>
+            </div>
+            <div class="menu-item">
+              <span><span class="name">Bissap glacé</span><span class="desc">fait maison</span></span>
+              <span class="price">750 F</span>
+            </div>
+            <div class="menu-item" style="border-bottom:none;">
+              <span><span class="name">Thiakry</span><span class="desc">mil, lait caillé</span></span>
+              <span class="price">1 000 F</span>
+            </div>
+            <div class="menu-cta"><span>panier · 3 articles</span><span>7 250 F</span></div>
+          </div>
+        </div>
+        <div class="showcase-copy">
+          <h2 class="section-title">Du menu à la paie, un seul parcours.</h2>
+          <p class="section-lede">Un QR code sur la table. Un site complet derrière. Le client consulte, commande et règle — le gérant garde tout sous contrôle, en temps réel.</p>
+          <div class="steps">
+            <div class="step">
+              <svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              <div><h3>Scanner</h3><p>Le client scanne le QR code posé sur la table ou la vitrine : le menu s'affiche instantanément, à jour, sans application à installer.</p></div>
+            </div>
+            <div class="step">
+              <svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              <div><h3>Commander</h3><p>Sélection des plats, envoi direct en cuisine ou au comptoir. Le gérant modifie le menu à tout moment, la mise à jour est immédiate.</p></div>
+            </div>
+            <div class="step">
+              <svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              <div><h3>Payer</h3><p>Note générée automatiquement, réglable en ligne. Le parcours se termine là où il devrait toujours finir : simplement.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="dark" id="services">
+    <div class="wrap">
+      <div class="eyebrow"><span class="mark">*</span> ce que nous faisons</div>
+      <h2 class="section-title">Des services pensés pour grandir avec vous.</h2>
+      <p class="section-lede">Nous démarrons par le menu digital, mais notre terrain de jeu est plus large : tout ce qui aide un commerce à passer au numérique, sans complexité inutile.</p>
+
+      <div class="services-grid">
+        <div class="service flagship">
+          <div class="tag">01</div>
+          <div><h3>Menus web &amp; QR Code</h3><p>Menu digital consultable en ligne, mis à jour en temps réel par le gérant.</p></div>
+        </div>
+        <div class="service">
+          <div class="tag">02</div>
+          <div><h3>Parcours client complet</h3><p>Du menu à la commande jusqu'au paiement, un site pensé de bout en bout.</p></div>
+        </div>
+        <div class="service">
+          <div class="tag">03</div>
+          <div><h3>Sites vitrines &amp; e-commerce</h3><p>Présence en ligne sur mesure pour commerces et indépendants.</p></div>
+        </div>
+        <div class="service">
+          <div class="tag">04</div>
+          <div><h3>Applications sur mesure</h3><p>Outils web et mobiles adaptés à des besoins métier spécifiques.</p></div>
+        </div>
+        <div class="service">
+          <div class="tag">05</div>
+          <div><h3>Automatisation &amp; intégrations</h3><p>Connecter paiement, gestion et commande pour réduire le travail manuel.</p></div>
+        </div>
+        <div class="service">
+          <div class="tag">06</div>
+          <div><h3>Conseil &amp; accompagnement</h3><p>Aide au choix des bons outils numériques, sans jargon superflu.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- A PROPOS -->
+  <section class="dark" id="apropos">
+    <div class="wrap about">
+      <div>
+        <div class="eyebrow"><span class="mark">*</span> à propos</div>
+        <h2 class="section-title">Une jeune structure, une ambition claire.</h2>
+        <div class="about-stats">
+          <div class="stat"><div class="num">2026</div><div class="label">lancement d'astérisk</div></div>
+          <div class="stat"><div class="num">Dakar - Cotonou</div><div class="label">bases d'opération</div></div>
+        </div>
+
+        <div style="display: flex; gap: 16px; margin-top: 40px; width: 100%;">
+          <div class="photo-card on-dark tilt-l reveal" style="flex: 1 1 0; min-width: 0; padding-bottom: 28px;">
+            <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/ea/e5/90/una-maestosita-dinanzi.jpg?w=1200&h=-1&s=1" alt="Vue du monument de la Renaissance">
+            <div class="caption" style="font-size: 16px;">Dakar, Sénégal *</div>
+          </div>
+
+          <div class="photo-card on-dark tilt-r reveal" style="flex: 1 1 0; min-width: 0; padding-bottom: 28px;">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJKfA40PqvCNqQylRi5-qC8X_vvc0bwqoiZa3VRLMMX4h71diIhSv9Ax8&s=10" alt="Vue de la place de l'Amazone">
+            <div class="caption" style="font-size: 16px;">Cotonou, Bénin *</div>
+          </div>
+        </div>        
+        
+      </div>
+      <div>
+        <p class="section-lede" style="max-width:60ch;">astérisk est une jeune entreprise de services informatiques basée entre Cotonou et Dakar. Nous débutons volontairement par un premier problème bien résolu — le menu digital — avant d'élargir notre gamme de services numériques.</p>
+        <p class="section-lede" style="max-width:60ch; margin-top:18px;">Notre conviction : un commerce n'a pas besoin d'une usine à gaz pour passer au numérique, juste du bon outil, bien pensé pour son terrain.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="dark contact" id="contact">
+    <div class="wrap contact-inner">
+      <div>
+        <div class="eyebrow"><span class="mark">*</span> parlons de votre projet</div>
+        <h2>Un commerce à digitaliser ? <em style="font-style:italic; color:var(--amber);">Commençons par en discuter.</em></h2>
+        <div class="contact-links">
+          <a href="mailto:services.as@hotmail.fr">
+            <svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            services.as@hotmail.fr
+          </a>
+          <a href="tel:+221000000000">
+            <svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            +221 77 412 23 32 / +229 45 58 22 28
+          </a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="eyebrow"><span class="mark">*</span> informations</div>
+        <ul>
+          <li><svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Dakar - Cotonou</li>
+          <li><svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Réponse sous 24 à 48h</li>
+          <li><svg class="ax" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Devis gratuit sur demande</li>
+        </ul>
+        <a href="mailto:services.as@hotmail.fr" class="btn btn-amber" style="margin-top:22px; width:100%; justify-content:center;">Démarrer une conversation</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="dark">
+    <div class="wrap" style="display:flex; justify-content:space-between; width:100%; flex-wrap:wrap; gap:12px;">
+      <span>© 2026 astérisk </span>
+      <span>fait avec * un peu partout dans le code</span>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+  // nav background swap on dark sections
+  const nav = document.getElementById('siteNav');
+  const darkSections = document.querySelectorAll('.dark');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting && e.boundingClientRect.top < 100){
+        nav.classList.add('on-dark');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  darkSections.forEach(s=>io.observe(s));
+
+  // reset nav when back at very top (hero)
+  window.addEventListener('scroll', ()=>{
+    if(window.scrollY < 80){ nav.classList.remove('on-dark'); }
+  });
+
+  // reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const ro = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); }
+    });
+  }, { threshold: 0.2 });
+  revealEls.forEach(el=>ro.observe(el));
+</script>
+
+</body>
+</html>
