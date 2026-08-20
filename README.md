@@ -27,7 +27,7 @@ Ce site présente notre vision, nos bases d'opérations et notre produit phare :
 ## 🌐 Déploiement & Accès
 
 Le site est déployé en continu et accessible publiquement à l'adresse :
-👉 **[asterisk-studio.vercel.app](https://asterisk-studio.vercel.app)** *(ou ton URL personnalisée Vercel)*
+👉 **[asterisk-studio.vercel.app](https://asterisk-studio.vercel.app)**
 
 ---
 
