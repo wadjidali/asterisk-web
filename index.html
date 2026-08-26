@@ -462,7 +462,6 @@
 </header>
  
 <main>
-  
   <!-- HERO -->
   <section class="hero">
     <div class="wrap hero-grid">
@@ -740,6 +739,28 @@
     });
   }, { threshold: 0.2 });
   revealEls.forEach(el=>ro.observe(el));
+
+  // menu hamburger (mobile)
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const navLinks = document.getElementById('navLinks');
+
+hamburgerBtn.addEventListener('click', () => {
+  const isOpen = navLinks.classList.toggle('mobile-open');
+  hamburgerBtn.classList.toggle('open', isOpen);
+  hamburgerBtn.setAttribute('aria-expanded', isOpen);
+  hamburgerBtn.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
+});
+
+// ferme le menu quand on clique un lien (mobile)
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navLinks.classList.remove('mobile-open');
+    hamburgerBtn.classList.remove('open');
+    hamburgerBtn.setAttribute('aria-expanded', 'false');
+    hamburgerBtn.setAttribute('aria-label', 'Ouvrir le menu');
+  });
+});
+
 </script>
 
 </body>
