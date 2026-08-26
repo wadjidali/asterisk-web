@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CPNZ2M8GDB"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -143,7 +142,39 @@
   nav.links a{ text-decoration:none; opacity:0.75; transition:opacity .2s ease; position:relative; }
   nav.links a:hover{ opacity:1; }
   nav.links a:focus-visible, .btn:focus-visible, a:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; }
-  @media (max-width:760px){ nav.links{ display:none; } }
+
+  /* Bouton Burger Mobile */
+  .menu-toggle{
+    display:none;
+    flex-direction:column;
+    justify-content:space-between;
+    width:24px; height:18px;
+    cursor:pointer; z-index:60;
+  }
+  .menu-toggle span{
+    display:block; width:100%; height:2px;
+    background:currentColor; transition:transform .3s ease, opacity .3s ease;
+  }
+
+  @media (max-width:760px){
+    .menu-toggle{ display:flex; }
+    nav.links{
+      display:none;
+      flex-direction:column;
+      position:absolute;
+      top:100%; left:0; right:0;
+      background: var(--bone);
+      padding:24px 32px;
+      gap:20px;
+      border-bottom:1px solid var(--line-light);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    header.nav.on-dark nav.links{
+      background: var(--forest);
+      border-bottom:1px solid var(--line-dark);
+    }
+    nav.links.open{ display:flex; }
+  }
 
   .btn{
     font-family:var(--mono); font-size:12.5px; letter-spacing:0.05em;
@@ -397,7 +428,14 @@
       <svg class="ax spin-slow" viewBox="0 0 24 24" fill="none"><path d="M12 2V22M4 6L20 18M20 6L4 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
       astérisk
     </div>
-    <nav class="links">
+    
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu mobile">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="links" id="navLinks">
       <a href="#produit">Produit</a>
       <a href="#services">Services</a>
       <a href="#apropos">À propos</a>
@@ -408,7 +446,6 @@
 
 <main>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
@@ -439,7 +476,6 @@
     <div class="bridge-note">* fait à la main, encore aujourd'hui</div>
   </div>
 
-  <!-- PRODUIT -->
   <section class="dark" id="produit">
     <div class="wrap">
       <div class="eyebrow"><span class="mark">*</span> produit phare</div>
@@ -498,7 +534,6 @@
     </div>
   </section>
 
-  <!-- SERVICES -->
   <section class="dark" id="services">
     <div class="wrap">
       <div class="eyebrow"><span class="mark">*</span> ce que nous faisons</div>
@@ -534,7 +569,6 @@
     </div>
   </section>
 
-  <!-- A PROPOS -->
   <section class="dark" id="apropos">
     <div class="wrap about">
       <div>
@@ -566,7 +600,6 @@
     </div>
   </section>
 
-  <!-- CONTACT -->
   <section class="dark contact" id="contact">
     <div class="wrap contact-inner">
       <div>
